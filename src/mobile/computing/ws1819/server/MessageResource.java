@@ -40,6 +40,13 @@ public class MessageResource {
 		return messageAsJSONstring;
 	}
 
+	@GET
+	@Path("/hosts")
+	@Produces(MediaType.APPLICATION_JSON)
+	public int getHosts() throws JsonProcessingException {
+		return messageList.size();
+	}
+	
 	@PUT
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -69,7 +76,10 @@ public class MessageResource {
 		//Message message = mapper.readValue(messageAsJSONstring, Message.class);
 		
 		
-		messageList.add(messageAsJSONstring);
+		messageList.add(0, messageAsJSONstring);
+		messageList.add(1, messageAsJSONstring);
+		messageList.add(2, messageAsJSONstring);
+		messageList.add(3, messageAsJSONstring);
 
 			//messageArray = messageList.toArray(messageArray);
 		
@@ -86,8 +96,9 @@ public class MessageResource {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String deleteMessage(@PathParam("id") int id) {
 		System.out.println("\nReceived DELETE Request for Resource with ID: " + id);
-
-		System.out.println("Deleting Message with ID: " + id + "...");
+		System.out.println("Current List: "+messageList);
+		messageList.remove(id);
+		System.out.println("Current List: "+messageList);
 		return "OK";
 	}
 
