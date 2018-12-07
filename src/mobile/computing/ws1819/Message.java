@@ -6,14 +6,14 @@ import java.util.Random;
 import java.util.Scanner;
 
 
-import mobile.computing.ws1819.client.StartRestClient;
+import mobile.computing.ws1819.client.HostRestClient;
 
 
 public class Message{
 
 	private int max_response_time;
 	private int check_sum;
-	private int Group_address;
+	private String Group_address;
 	private String Type;
 	
 	public String getType() {
@@ -34,10 +34,10 @@ public class Message{
 	public void setCheck_sum(int check_sum) {
 		this.check_sum = check_sum;
 	}
-	public int getGroup_address() {
+	public String getGroup_address() {
 		return Group_address;
 	}
-	public void setGroup_address(int group_address) {
+	public void setGroup_address(String group_address) {
 		Group_address = group_address;
 	}
 	
@@ -52,22 +52,49 @@ public class Message{
 		message.setType("jdfhjg");
 		message.setMax_response_time(random.nextInt());
 		message.setCheck_sum(6456);
-		message.setGroup_address(0);
-		message.setSocket("10.10.10.10:8888");
+		message.setGroup_address("0.0.0.0");
+		
+		scan.close();
+		
+		return message;
+	}
+	
+	public static Message generateMR()
+	{
+		Random random = new Random();
+		
+		System.out.println("Send join:");
+		Scanner scan = new Scanner(System.in);
+
+		Message message = new Message();
+		message.setType("0X16");
+		message.setMax_response_time(random.nextInt());
+		message.setCheck_sum(1);
+		message.setGroup_address("224.7.7.7");
+		
+		scan.close();
+		
+		return message;
+	}
+	
+	public static Message generateLG()
+	{
+		Random random = new Random();
+		
+		System.out.println("Send join:");
+		Scanner scan = new Scanner(System.in);
+
+		Message message = new Message();
+		message.setType("0X17");
+		message.setMax_response_time(random.nextInt());
+		message.setCheck_sum(1);
+		message.setGroup_address("224.7.7.7");
 		
 		scan.close();
 		
 		return message;
 	}
 
-
-
-
-	
-	private void setSocket(String string) {
-		// TODO Auto-generated method stub
-		
-	}
 	@Override
 	public String toString()
 	{

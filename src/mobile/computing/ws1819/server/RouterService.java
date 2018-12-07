@@ -2,7 +2,6 @@ package mobile.computing.ws1819.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -20,11 +19,11 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import mobile.computing.ws1819.Message;
+import mobile.computing.ws1819.client.Host;
 
-@Path("harsha")
-public class MessageResource {
-    Object messageArray[] = new Object[3];
-    ArrayList<Object> messageList = new ArrayList<Object>();
+@Path("routerService")
+public class RouterService {
+    static ArrayList<Object> multicastGroup = new ArrayList<Object>();
     
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -39,12 +38,16 @@ public class MessageResource {
 
 		return messageAsJSONstring;
 	}
-
+	
 	@GET
 	@Path("/hosts")
 	@Produces(MediaType.APPLICATION_JSON)
-	public int getHosts() throws JsonProcessingException {
-		return messageList.size();
+	public String getHosts() throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+
+		String mgHosts = mapper.writeValueAsString(multicastGroup);	
+		
+		return mgHosts;
 	}
 	
 	@PUT
@@ -65,41 +68,31 @@ public class MessageResource {
 	}
 
 	@POST	
+	@Path("/register")
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public String createMessage(String messageAsJSONstring)
-			throws JsonParseException, JsonMappingException, IOException {
-		//ArrayList<Message > list=new ArrayList<>(); 
-    
-		// Deserialise JSON message
+	public String registerHost(String hostString) throws JsonParseException, JsonMappingException, IOException {
 		//ObjectMapper mapper = new ObjectMapper();
-		//Message message = mapper.readValue(messageAsJSONstring, Message.class);
 		
+		//Host hostObj = mapper.readValue(hostString, Host.class);
 		
-		messageList.add(0, messageAsJSONstring);
-		messageList.add(1, messageAsJSONstring);
-		messageList.add(2, messageAsJSONstring);
-		messageList.add(3, messageAsJSONstring);
+		multicastGroup.add(hostString);		
 
-			//messageArray = messageList.toArray(messageArray);
-		
-		System.out.println("Creating Message Object...\n" + messageList.size() + messageList);
+		System.out.println("Creating Message Object...\n" + multicastGroup.size() + multicastGroup);
 
-		
-		return "OK";
-		
+		return "Registered";
 		
 	}
 
 	@DELETE
-	@Path("/{id}")
+	@Path("/deregister/{id}")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String deleteMessage(@PathParam("id") int id) {
-		System.out.println("\nReceived DELETE Request for Resource with ID: " + id);
-		System.out.println("Current List: "+messageList);
-		messageList.remove(id);
-		System.out.println("Current List: "+messageList);
-		return "OK";
+	public String deregisterHost(@PathParam("id") int id) {
+		System.out.println("Deleted at: "+id);
+
+		multicastGroup.remove(id);
+		System.out.println("Deleted List: "+multicastGroup);
+		return "Host Unregistered";
 	}
 
 }

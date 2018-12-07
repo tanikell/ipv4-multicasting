@@ -14,18 +14,14 @@ import mobile.computing.ws1819.Message;
 import mobile.computing.ws1819.client.Host;
 
 
-public class StartRestClient
+public class HostRestClient
 {
 
 	public static void main(String[] args) throws IOException
 	{
-		doGetRequest();
-		
-		doPostRequest();
+		postHost(null);
 
-		//doPutRequest();
-
-		//doDeleteRequest();
+		deleteHost(0);
 	}
 
 
@@ -34,7 +30,7 @@ public class StartRestClient
 		// Send GET request
 		WebResource service = Client.create().resource("http://localhost:8080/api");
 		
-		String response = service.path("harsha").accept(MediaType.APPLICATION_JSON).get(String.class);
+		String response = service.path("routerService").accept(MediaType.APPLICATION_JSON).get(String.class);
 
 		System.out.println("Received JSON String:\n" + response);
 
@@ -47,22 +43,21 @@ public class StartRestClient
 
 
 
-	public static void doPostRequest() throws JsonProcessingException
+	public static void postHost(Host host) throws JsonProcessingException
 	{
-		//Message message = Message.generateExampleMessage();
-		Host host1 = Host.createHost();
 		// Serialise Message Object
 		ObjectMapper mapper = new ObjectMapper();
-
-		String hostData = mapper.writeValueAsString(host1);
+	
+		String hostData = mapper.writeValueAsString(host);
 		System.out.println(hostData);
 
 		// Send POST request
 		Client create = Client.create();
 		WebResource service = create.resource("http://localhost:8080/api");
-		String response = service.path("harsha").type(MediaType.APPLICATION_JSON).post(String.class, hostData);
+		String response = service.path("routerService/register").type(MediaType.APPLICATION_JSON).post(String.class, hostData);
 		System.out.println(response);
 	}
+	
 
 
 
@@ -86,19 +81,18 @@ public class StartRestClient
 
 
 
-	/*private static void doDeleteRequest() throws JsonProcessingException
+	public static void deleteHost(int hostId) throws JsonProcessingException
 	{
-		Message message = Message.generateExampleMessage();
-
 		// Serialise Message Object
-		ObjectMapper mapper = new ObjectMapper();
+		//ObjectMapper mapper = new ObjectMapper();
 
-		String messageAsJSONstring = mapper.writeValueAsString(message);
+		//String hostData = mapper.writeValueAsString(hostToDelete);
+		//System.out.println(hostData);
 
 		// Send DELETE request
 		Client create = Client.create();
 		WebResource service = create.resource("http://localhost:8080/api");
-		String response = service.path("message").path(String.valueOf(message.getId())).type(MediaType.APPLICATION_JSON).delete(String.class, messageAsJSONstring);
+		String response = service.path("routerService/deregister").path(String.valueOf(hostId)).type(MediaType.APPLICATION_JSON).delete(String.class);
 		System.out.println(response);
-	}*/
+	}
 }
