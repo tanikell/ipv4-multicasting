@@ -2,28 +2,30 @@ package mobile.computing.ws1819.client;
 import java.io.IOException;
 import java.util.Scanner;
 
-import mobile.computing.ws1819.Message;
-
 public class Host4 {
 
 	static HostRestClient restClient = new HostRestClient();
+
+	static String status;
 	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		// TODO Auto-generated method stub
+
+	public static void main(String[] args) throws IOException {
+
+		@SuppressWarnings("resource")
 		Scanner sc = new Scanner(System.in);
 
 		System.out.println("Would you like to join or leave: ");
 	
-		String status = sc.nextLine();
+		status = sc.nextLine();
 		
 		System.out.println("You have entered: " + status);
-		Host host4 = new Host("10.10.10.7:8003", 3, Message.generateMR());
+		
+		Host h4 = Host.generateHost4();
 
 		if(status.equals("join")) {
 			try {
 				System.out.println("Sending Host: ");
-				restClient.postHost(host4);
+				HostRestClient.postHost(h4);
 				System.out.println("Post Success");
 			} catch (IOException e) {
 				System.out.println("Post Failure");
@@ -32,9 +34,9 @@ public class Host4 {
 			
 		} else if (status.equals("leave")){
 			try {
-				System.out.println("Deleting Host: "+host4.getId());
-				restClient.deleteHost(host4.getId());
-				System.out.println("Delte Success");
+				System.out.println("Deleting Host: "+h4.getId());
+				HostRestClient.deleteHost(h4.getId());
+				System.out.println("Delete Success");
 			} catch (IOException e) {
 				System.out.println("Delete Failure");
 				e.printStackTrace();
@@ -42,6 +44,8 @@ public class Host4 {
 		} else {
 			System.out.println("Something wrong with your input");
 		}
+		
+
 	}
 
 }

@@ -2,6 +2,8 @@ package mobile.computing.ws1819.server;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -14,6 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +26,8 @@ import mobile.computing.ws1819.client.Host;
 
 @Path("routerService")
 public class RouterService {
-    static ArrayList<Object> multicastGroup = new ArrayList<Object>();
+    //static ArrayList<Object> multicastGroup = new ArrayList<Object>();
+    static Hashtable multicastGroup = new Hashtable();
     
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -42,14 +46,38 @@ public class RouterService {
 	@GET
 	@Path("/hosts")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String getHosts() throws JsonProcessingException {
+	public Object getHosts() throws JsonProcessingException {
+		System.out.println("Getting Hosts in MG:");
 		ObjectMapper mapper = new ObjectMapper();
 
-		String mgHosts = mapper.writeValueAsString(multicastGroup);	
+		Object mgHosts = mapper.writeValueAsString(multicastGroup.values());	
 		
 		return mgHosts;
 	}
 	
+	// @TODO: Implement ping for all registered clients
+	/*Client client = ClientBuilder.newClient();
+	WebTarget target = client.target("http://localhost:8080");
+	Response response = target.path("api").path("server").path("ping").request(MediaType.TEXT_PLAIN_TYPE).get();
+	System.out.println("Response: " + response.getStatus() + " - " + response.readEntity(String.class));*/
+	
+	
+	/*me
+	 * public void sendToOneClient (String userName, String ipAddress, Map<String, Client> clients)
+{
+    Client c = clients.get(userName + ":" + ipAddress);
+
+    java.net.Socket socket = c.getSocket();
+
+    // Sending the response back to the client.
+    // Note: Ideally you want all these in a try/catch/finally block
+    OutputStream os = socket.getOutputStream();
+    OutputStreamWriter osw = new OutputStreamWriter(os);
+    BufferedWriter bw = new BufferedWriter(osw);
+    bw.write("Some message");
+    bw.flush();
+}
+	 */
 	@PUT
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -72,13 +100,16 @@ public class RouterService {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public String registerHost(String hostString) throws JsonParseException, JsonMappingException, IOException {
-		//ObjectMapper mapper = new ObjectMapper();
-		
-		//Host hostObj = mapper.readValue(hostString, Host.class);
-		
-		multicastGroup.add(hostString);		
+				
+		ObjectMapper mapper = new ObjectMapper();
+		Host host = mapper.readValue(hostString, Host.class);
+		System.out.println("hostID: "+host.getId());
 
-		System.out.println("Creating Message Object...\n" + multicastGroup.size() + multicastGroup);
+		//Host host = mapper.readValue(hostString, Host.class);
+
+
+		multicastGroup.put(host.getId(), hostString);		
+		System.out.println("multicastGroup: "+multicastGroup);
 
 		return "Registered";
 		

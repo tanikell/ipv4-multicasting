@@ -81,7 +81,7 @@ public class Message{
 	{
 		Random random = new Random();
 		
-		System.out.println("Send join:");
+		System.out.println("Send leave:");
 		Scanner scan = new Scanner(System.in);
 
 		Message message = new Message();
