@@ -58,7 +58,12 @@ public class HostRestClient
 		System.out.println(response);
 	}
 	
-
+	public static void broadcastMessage(String message) {
+		Client create = Client.create();
+		WebResource service = create.resource("http://localhost:8080/api");
+		String response = service.path("routerService/broadcastMessage").type(MediaType.APPLICATION_JSON).post(String.class, message);
+		System.out.println(response);
+	}
 
 
 
@@ -95,4 +100,7 @@ public class HostRestClient
 		String response = service.path("routerService/deregister").path(String.valueOf(hostId)).type(MediaType.APPLICATION_JSON).delete(String.class);
 		System.out.println(response);
 	}
+
+
+
 }

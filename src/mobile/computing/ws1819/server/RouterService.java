@@ -14,6 +14,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.xml.soap.MessageFactory;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -105,14 +106,21 @@ public class RouterService {
 		Host host = mapper.readValue(hostString, Host.class);
 		System.out.println("hostID: "+host.getId());
 
-		//Host host = mapper.readValue(hostString, Host.class);
-
-
 		multicastGroup.put(host.getId(), hostString);		
 		System.out.println("multicastGroup: "+multicastGroup);
 
 		return "Registered";
-		
+	}
+	
+	@POST	
+	@Path("/broadcastMessage")
+	@Produces(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String broadcastMessage(String message) throws JsonParseException, JsonMappingException, IOException {
+
+		System.out.println("broadcastMessage: "+message);
+
+		return "Message Posted";
 	}
 
 	@DELETE
