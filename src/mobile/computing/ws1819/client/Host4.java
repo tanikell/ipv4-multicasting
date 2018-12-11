@@ -9,47 +9,49 @@ public class Host4{
 
 	static String status;
 
+	static int group;
+
 	static Scanner sc = new Scanner(System.in);
 
 	public static void main(String[] args) throws IOException {
 
-		System.out.println("Would you like to join/leave/broadcast (j/l/b) ? : ");
+			System.out.println("Would you like to join/leave/broadcast (j/l/b) ? : ");
 
-		status = sc.nextLine();
-
-		if (status.equals("j")) {
-			Host h4 = Host.generateHost4();
-
-			try {
-				System.out.println("Sending Host: ");
-				HostRestClient.postHost(h4);
-				System.out.println("Post Success");
-			} catch (IOException e) {
-				System.out.println("Post Failure");
-				e.printStackTrace();
-			}
-
-		} else if (status.equals("l")) {
-			Host h4 = Host.generateHost4();
-
-			try {
-				System.out.println("Deleting Host: " + h4.getId());
-				HostRestClient.deleteHost(h4.getId());
-				System.out.println("Delete Success");
-			} catch (IOException e) {
-				System.out.println("Delete Failure");
-				e.printStackTrace();
-			}
-		} else if (status.equals("b")) {
-
-			System.out.println("Enter your message to group : ");
 			status = sc.nextLine();
-			HostRestClient.broadcastMessage(status);
-
-		} else {
-			System.out.println("Something wrong with your input");
-		}
-
+	
+			if (status.equals("j")) {
+				//Host h1 = Host.generateHost1();
+				System.out.println("Which MCG to join (7/9) ? : ");
+	
+				group = Integer.parseInt(sc.nextLine());
+				try {
+					System.out.println("Sending Host: ");
+					HostRestClient.postHost(Host.createHost4(group));
+					System.out.println("Post Success");
+				} catch (IOException e) {
+					System.out.println("Post Failure");
+					e.printStackTrace();
+				}
+			} else if (status.equals("l")) {
+				System.out.println("Which MCG to leave from (7/9) ? : ");
+				
+				group = Integer.parseInt(sc.nextLine());
+				try {
+					HostRestClient.deleteHost(group , Host.createHost4(group).getId());
+					System.out.println("Delete Success");
+				} catch (IOException e) {
+					System.out.println("Delete Failure");
+					e.printStackTrace();
+				}
+			} else if (status.equals("b")) {
+	
+				System.out.println("Enter your message to group : ");
+				status = sc.nextLine();
+				HostRestClient.broadcastMessage(status);
+	
+			} else {
+				System.out.println("Something wrong with your input");
+			}
 	}
 
 }

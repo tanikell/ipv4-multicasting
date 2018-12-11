@@ -59,7 +59,7 @@ public class Message{
 		return message;
 	}
 	
-	public static Message generateMR()
+	public static Message generateMR(int id)
 	{
 		Random random = new Random();
 		
@@ -69,7 +69,12 @@ public class Message{
 		message.setType("0X16");
 		message.setMax_response_time(random.nextInt());
 		message.setCheck_sum(1);
-		message.setGroup_address("224.7.7.7");
+		
+		if(id == 7) {
+			message.setGroup_address("224.7.7.7");
+		} else {
+			message.setGroup_address("224.9.9.9");
+		}
 		
 		scan.close();
 		

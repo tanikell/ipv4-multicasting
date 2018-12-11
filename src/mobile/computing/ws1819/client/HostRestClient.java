@@ -21,7 +21,7 @@ public class HostRestClient
 	{
 		postHost(null);
 
-		deleteHost(0);
+		deleteHost(0, 0);
 	}
 
 
@@ -86,7 +86,7 @@ public class HostRestClient
 
 
 
-	public static void deleteHost(int hostId) throws JsonProcessingException
+	public static void deleteHost(int group, int hostId) throws JsonProcessingException
 	{
 		// Serialise Message Object
 		//ObjectMapper mapper = new ObjectMapper();
@@ -97,7 +97,7 @@ public class HostRestClient
 		// Send DELETE request
 		Client create = Client.create();
 		WebResource service = create.resource("http://localhost:8080/api");
-		String response = service.path("routerService/deregister").path(String.valueOf(hostId)).type(MediaType.APPLICATION_JSON).delete(String.class);
+		String response = service.path("routerService/deregister").path(String.valueOf(group)).path(String.valueOf(hostId)).type(MediaType.APPLICATION_JSON).delete(String.class);
 		System.out.println(response);
 	}
 

@@ -1,6 +1,7 @@
 package mobile.computing.ws1819.server;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -28,8 +29,9 @@ import mobile.computing.ws1819.client.Host;
 @Path("routerService")
 public class RouterService {
     //static ArrayList<Object> multicastGroup = new ArrayList<Object>();
-    static Hashtable multicastGroup = new Hashtable();
-    
+    static Hashtable multicastGroup7 = new Hashtable();
+    static Hashtable multicastGroup9 = new Hashtable();
+
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public String getMessage() throws JsonProcessingException {
@@ -45,16 +47,21 @@ public class RouterService {
 	}
 	
 	@GET
-	@Path("/hosts")
+	@Path("/hosts/mcg{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Object getHosts() throws JsonProcessingException {
-		System.out.println("Getting Hosts in MG:");
+	public Object getHostsFromMCG7(@PathParam("id") int id) throws JsonProcessingException {
+		System.out.println("Getting Hosts in MCG: "+id);
 		ObjectMapper mapper = new ObjectMapper();
-
-		Object mgHosts = mapper.writeValueAsString(multicastGroup.values());	
+		Object mgHosts = null;
+		if (id == 7) {
+			mgHosts = mapper.writeValueAsString(multicastGroup7.values());	
+		} else {
+			mgHosts = mapper.writeValueAsString(multicastGroup9.values());	
+		}
 		
 		return mgHosts;
 	}
+	
 	
 	// @TODO: Implement ping for all registered clients
 	/*Client client = ClientBuilder.newClient();
@@ -105,10 +112,14 @@ public class RouterService {
 		ObjectMapper mapper = new ObjectMapper();
 		Host host = mapper.readValue(hostString, Host.class);
 		System.out.println("hostID: "+host.getId());
-
-		multicastGroup.put(host.getId(), hostString);		
-		System.out.println("multicastGroup: "+multicastGroup);
-
+		System.out.println("hostID: "+host.getMessage().getGroup_address());
+		
+		if (host.getMessage().getGroup_address().equals("224.7.7.7")) {
+			multicastGroup7.put(host.getId(), hostString);		
+		} else {
+			multicastGroup9.put(host.getId(), hostString);		
+		}
+		
 		return "Registered";
 	}
 	
@@ -124,13 +135,17 @@ public class RouterService {
 	}
 
 	@DELETE
-	@Path("/deregister/{id}")
+	@Path("/deregister/{group}/{id}")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String deregisterHost(@PathParam("id") int id) {
-		System.out.println("Deleted at: "+id);
-
-		multicastGroup.remove(id);
-		System.out.println("Deleted List: "+multicastGroup);
+	public String deregisterHost(@PathParam("group") int group, @PathParam("id") int id) throws NoSuchFieldException, SecurityException {
+		System.out.println("Group : "+group+" id: "+id);
+		
+		if(group == 7) {
+			multicastGroup7.remove(id);
+		} else {
+			multicastGroup9.remove(id);
+		}
+		
 		return "Host Unregistered";
 	}
 
