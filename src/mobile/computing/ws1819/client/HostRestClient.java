@@ -58,10 +58,10 @@ public class HostRestClient
 		System.out.println(response);
 	}
 	
-	public static void broadcastMessage(String message) {
+	public static void sendMessage(int group, String message) {
 		Client create = Client.create();
 		WebResource service = create.resource("http://localhost:8080/api");
-		String response = service.path("routerService/broadcastMessage").type(MediaType.APPLICATION_JSON).post(String.class, message);
+		String response = service.path("routerService/sendMessage").path(String.valueOf(group)).type(MediaType.APPLICATION_JSON).post(String.class, message);
 		System.out.println(response);
 	}
 

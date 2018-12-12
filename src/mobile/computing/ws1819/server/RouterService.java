@@ -2,10 +2,9 @@ package mobile.computing.ws1819.server;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Hashtable;
+import java.util.*;
 
+import javax.swing.SortingFocusTraversalPolicy;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -22,19 +21,26 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 
 import mobile.computing.ws1819.Message;
 import mobile.computing.ws1819.client.Host;
+import mobile.computing.ws1819.client.Host1;
+import mobile.computing.ws1819.client.Host2;
+import mobile.computing.ws1819.client.Host3;
+import mobile.computing.ws1819.client.Host4;
+
 
 @Path("routerService")
 public class RouterService {
     //static ArrayList<Object> multicastGroup = new ArrayList<Object>();
     static Hashtable multicastGroup7 = new Hashtable();
     static Hashtable multicastGroup9 = new Hashtable();
-
+    
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public String getMessage() throws JsonProcessingException {
+	public String getMessage() throws JsonProcessingException, IOException {
 		System.out.println("\nReceived GET Request");
 		// Generate message
 		Message message = Message.generateExampleMessage();
@@ -45,7 +51,39 @@ public class RouterService {
 
 		return messageAsJSONstring;
 	}
-	
+
+	@POST	
+	@Path("/multicastMessage/{group}")
+	@Produces(MediaType.TEXT_PLAIN)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public String multicastMessage(@PathParam("group") int group, String message) throws JsonProcessingException, IOException {
+
+		System.out.println("Multicasting: "+message+" to Group: "+group);
+		String[] a = new String[] {message};
+		Enumeration<Integer> keys;
+		
+		if(group == 7) {
+			keys = multicastGroup7.keys();
+		} else {
+			keys = multicastGroup9.keys();
+		}
+
+		while(keys.hasMoreElements()){
+			int key = keys.nextElement();
+			if (key==1) {
+				Host1.main(a);
+			} else if (key==2) {
+				Host2.main(a);
+			}else if (key==3) {
+				Host3.main(a);
+			}else{
+				Host4.main(a);
+			}
+		}
+
+		return "Message multicased to clients";
+	}
+
 	@GET
 	@Path("/hosts/mcg{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -62,30 +100,6 @@ public class RouterService {
 		return mgHosts;
 	}
 	
-	
-	// @TODO: Implement ping for all registered clients
-	/*Client client = ClientBuilder.newClient();
-	WebTarget target = client.target("http://localhost:8080");
-	Response response = target.path("api").path("server").path("ping").request(MediaType.TEXT_PLAIN_TYPE).get();
-	System.out.println("Response: " + response.getStatus() + " - " + response.readEntity(String.class));*/
-	
-	
-	/*me
-	 * public void sendToOneClient (String userName, String ipAddress, Map<String, Client> clients)
-{
-    Client c = clients.get(userName + ":" + ipAddress);
-
-    java.net.Socket socket = c.getSocket();
-
-    // Sending the response back to the client.
-    // Note: Ideally you want all these in a try/catch/finally block
-    OutputStream os = socket.getOutputStream();
-    OutputStreamWriter osw = new OutputStreamWriter(os);
-    BufferedWriter bw = new BufferedWriter(osw);
-    bw.write("Some message");
-    bw.flush();
-}
-	 */
 	@PUT
 	@Path("/{id}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -124,13 +138,18 @@ public class RouterService {
 	}
 	
 	@POST	
-	@Path("/broadcastMessage")
+	@Path("/sendMessage/{group}")
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public String broadcastMessage(String message) throws JsonParseException, JsonMappingException, IOException {
+	public String sendMessage(@PathParam("group") int group, String message) throws JsonParseException, JsonMappingException, IOException {
 
-		System.out.println("broadcastMessage: "+message);
-
+		//this.hostMessage = message;
+		System.out.println("sendMessage: "+message);
+		//this.multicastMessage(group, message);
+		Client create = Client.create();
+		WebResource service = create.resource("http://localhost:8080/api");
+		String response = service.path("routerService/multicastMessage").path(String.valueOf(group)).type(MediaType.APPLICATION_JSON).post(String.class, message);
+		System.out.println(response);
 		return "Message Posted";
 	}
 
